@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/66r5b5j.png" title="IdiomiInglesi" alt="IdiomiInglesi">
+<a href="https://www.amazon.it/dp/B07Q3XRLMP/ref=sr_1_2?__mk_it_IT=%C3%85M%C3%85%C5%BD%C3%95%C3%91&keywords=idiomi+inglesi&qid=1553708009&s=alexa-skills&sr=1-2-catcorr"><img src="https://i.imgur.com/66r5b5j.png" title="IdiomiFrancesi" alt="IdiomiFrancesi"></a>
 
 # Alexa Skill: Idiomi Francesi (French Idioms)
 
@@ -20,6 +20,11 @@
 ```
 
 ---
+
+## Enable Skill (Italy only)
+
+
+- <a href="https://www.amazon.it/dp/B07Q3XRLMP/ref=sr_1_2?__mk_it_IT=%C3%85M%C3%85%C5%BD%C3%95%C3%91&keywords=idiomi+inglesi&qid=1553708009&s=alexa-skills&sr=1-2-catcorr" target="_blank">Idiomi Francesi on Amazon.it</a>
 
 ## License
 
