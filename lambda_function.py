@@ -3,6 +3,7 @@
 
 import random
 import logging
+import json
 
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import (
@@ -13,8 +14,13 @@ from ask_sdk_core.handler_input import HandlerInput
 
 from ask_sdk_model.ui import SimpleCard
 from ask_sdk_model import Response
-import idioms_data
-from idioms_data import data
+import modi_di_dire
+from modi_di_dire import data
+import backgrounds
+from backgrounds import data
+from ask_sdk_model.interfaces.alexa.presentation.apl import (
+    RenderDocumentDirective, ExecuteCommandsDirective, SpeakItemCommand,
+    AutoPageCommand, HighlightMode)
 
 
 SKILL_NAME = "Idiomi Francesi"
@@ -32,6 +38,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+def _load_apl_document(file_path):
+    # type: (str) -> Dict[str, Any]
+    """Load the apl json document at the path into a dict object."""
+    with open(file_path) as f:
+        return json.load(f)
+
+
 # Built-in Intent Handlers
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
@@ -47,6 +60,10 @@ class LaunchRequestHandler(AbstractRequestHandler):
         handler_input.response_builder.speak(speech_text).set_card(
             SimpleCard(speech_text)).set_should_end_session(
             False)
+
+        handler_input.response_builder.speak(speech_text).add_directive(RenderDocumentDirective(
+            token="pager2Token", document=_load_apl_document("apl-welcome.json")))
+
         return handler_input.response_builder.response
 
 
@@ -61,14 +78,37 @@ class IdiomaHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         logger.info("In IdiomaHandler")
 
-        random_fact = random.choice(idioms_data.data)
+        random_fact = random.choice(modi_di_dire.data)
         idiom = random_fact["Idioma"]
         meaning = random_fact["Significato"]
 
-        speech = GET_FACT_MESSAGE + ("<voice name='Celine'><lang xml:lang='fr-FR'>{}</lang></voice>. Significa: {}.".format(idiom, meaning))
+        random_background = random.choice(backgrounds.data)
+        image = random_background["img"]
+
+        speech = GET_FACT_MESSAGE + \
+            ("<voice name='Celine'><lang xml:lang='fr-FR'>{}</lang></voice>. Significa: {}.".format(idiom, meaning))
 
         handler_input.response_builder.speak(speech).set_card(SimpleCard(SKILL_NAME, idiom + "\n" + meaning)).set_should_end_session(
             True)
+
+        handler_input.response_builder.speak(speech).add_directive(
+            RenderDocumentDirective(
+                token="pagerToken",
+                document=_load_apl_document("apl-idioma.json"),
+                datasources={
+                    'idiomaTemplateData': {
+                        'type': 'object',
+                        'properties': {
+                            'text': "{}".format(idiom)
+                        }
+                    },
+                    'backgroundsData': {
+                        'image': "{}".format(image)
+                    }
+
+                }
+            ))
+
         return handler_input.response_builder.response
 
 
