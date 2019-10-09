@@ -62,7 +62,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
             False)
 
         handler_input.response_builder.speak(speech_text).add_directive(RenderDocumentDirective(
-            token="pager2Token", document=_load_apl_document("apl-welcome.json")))
+            token="idiomiToken", document=_load_apl_document("apl-welcome.json")))
 
         return handler_input.response_builder.response
 
@@ -93,7 +93,7 @@ class IdiomaHandler(AbstractRequestHandler):
 
         handler_input.response_builder.speak(speech).add_directive(
             RenderDocumentDirective(
-                token="pagerToken",
+                token="idiomiToken",
                 document=_load_apl_document("apl-idioma.json"),
                 datasources={
                     'idiomaTemplateData': {
