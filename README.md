@@ -20,6 +20,7 @@
 ```
 
 ## Now supports Alexa Presentation Language
+(thanks to <a href="https://github.com/cspollar">@cspollar</a>, their <a href="https://github.com/alexa-labs/skill-sample-python-pager-karaoke/pull/3">PR</a> helped me figure out how to check for APL support in Python)
 
 ```handler_input.response_builder.speak(speech).add_directive(
      RenderDocumentDirective(
