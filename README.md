@@ -19,6 +19,26 @@
         speech = GET_FACT_MESSAGE + ("<voice name='Celine'><lang xml:lang='fr-FR'>{}</lang></voice>. Significa: {}.".format(idiom, meaning))
 ```
 
+## Now supports Alexa Presentation Language
+
+```handler_input.response_builder.speak(speech).add_directive(
+     RenderDocumentDirective(
+        token="idiomiToken",
+        document=_load_apl_document("apl-idioma.json"),
+        datasources={
+                'idiomaTemplateData': {
+                        'type': 'object',
+                        'properties': {
+                             'text': "{}".format(idiom)
+                         }
+                },
+                 'backgroundsData': {
+                 'image': "{}".format(image)
+                  }
+                }
+            ))
+```
+
 ---
 
 ## Enable Skill (Italy only)
