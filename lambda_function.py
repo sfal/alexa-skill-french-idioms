@@ -37,6 +37,15 @@ sb = SkillBuilder()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+# check if device supports apl
+
+
+def _supports_apl(handler_input):
+    # type: (HandlerInput) -> bool
+    device = handler_input.request_envelope.context.system.device
+    apl_interface = device.supported_interfaces.alexa_presentation_apl
+    return bool(apl_interface)
+
 
 def _load_apl_document(file_path):
     # type: (str) -> Dict[str, Any]
@@ -54,15 +63,16 @@ class LaunchRequestHandler(AbstractRequestHandler):
         return is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
+
         # type: (HandlerInput) -> Response
         speech_text = "Benvenuto in Idiomi Francesi. Puoi chiedermi: dimmi un modo di dire francese."
 
-        handler_input.response_builder.speak(speech_text).set_card(
-            SimpleCard(speech_text)).set_should_end_session(
-            False)
-
-        handler_input.response_builder.speak(speech_text).add_directive(RenderDocumentDirective(
-            token="idiomiToken", document=_load_apl_document("apl-welcome.json")))
+        if _supports_apl(handler_input):  # check if APL is supported on device
+            handler_input.response_builder.speak(speech_text).add_directive(RenderDocumentDirective(
+                token="idiomiToken", document=_load_apl_document("apl-welcome.json")))
+        else:
+            handler_input.response_builder.speak(speech_text).set_card(
+                SimpleCard(speech_text)).set_should_end_session(False)
 
         return handler_input.response_builder.response
 
@@ -88,26 +98,27 @@ class IdiomaHandler(AbstractRequestHandler):
         speech = GET_FACT_MESSAGE + \
             ("<voice name='Celine'><lang xml:lang='fr-FR'>{}</lang></voice>. Significa: {}.".format(idiom, meaning))
 
-        handler_input.response_builder.speak(speech).set_card(SimpleCard(SKILL_NAME, idiom + "\n" + meaning)).set_should_end_session(
-            True)
-
-        handler_input.response_builder.speak(speech).add_directive(
-            RenderDocumentDirective(
-                token="idiomiToken",
-                document=_load_apl_document("apl-idioma.json"),
-                datasources={
-                    'idiomaTemplateData': {
-                        'type': 'object',
-                        'properties': {
-                            'text': "{}".format(idiom)
+        if _supports_apl(handler_input):  # check if APL is supported on device
+            handler_input.response_builder.speak(speech).add_directive(
+                RenderDocumentDirective(
+                    token="idiomiToken",
+                    document=_load_apl_document("apl-idioma.json"),
+                    datasources={
+                        'idiomaTemplateData': {
+                            'type': 'object',
+                            'properties': {
+                                'text': "{}".format(idiom)
+                            }
+                        },
+                        'backgroundsData': {
+                            'image': "{}".format(image)
                         }
-                    },
-                    'backgroundsData': {
-                        'image': "{}".format(image)
-                    }
 
-                }
-            ))
+                    }
+                ))
+        else:
+            handler_input.response_builder.speak(speech).set_card(SimpleCard(SKILL_NAME, idiom + "\n" + meaning)).set_should_end_session(
+                True)
 
         return handler_input.response_builder.response
 
